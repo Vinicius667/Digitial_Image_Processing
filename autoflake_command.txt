@@ -1,0 +1,1 @@
+autoflake --expand-star-imports --remove-all-unused-imports -r -i ./
