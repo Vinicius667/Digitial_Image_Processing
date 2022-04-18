@@ -3,7 +3,7 @@ import cv2
 from numpy import asarray, log10, max, min, uint8
 
 
-def imshow(mat,winname="Imagem",normalize = False,log=False,c=110,save=False,show=False):
+def imshow(mat,winname="Imagem",normalize = False,log=False,c=110,save=False,show=True):
     if log:
         mat = c*log10(1+mat)
     if normalize:
