@@ -19,14 +19,14 @@ imshow(img)
 pixel_values = np.float32(pixel_values) 
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.1) # creterias for k-means
 
-
+'''
 for k in range(3,11,2):
     ret, labels, centers = cv2.kmeans(pixel_values, k,None, criteria, 30, cv2.KMEANS_PP_CENTERS)
     centers = np.uint8(centers) # centroids
     segmented_img = centers[labels.flatten()] # segmented image
     segmented_img = segmented_img.reshape(img.shape) # reshape vector
     imshow(segmented_img,f"onion_k_{k}",save=True) 
-
+'''
 
 
 # Legumes : (k, [cor1,cor2,...],corrigir_seg) 
@@ -38,7 +38,8 @@ fruta_laranja = (9,([97,105],),False)
 legumes = [pimenta,cebola,fruta_verde,fruta_amarela,fruta_laranja]
 
 image_copy = img.copy()
-for legume in legumes:
+for j,legume in enumerate(legumes):
+    
     k = legume[0] # Value o k
     corrigir_seg = legume[2] # Bool to check if needs correction
     segmented_img = cv2.imread(f"onion_k_{k}.png") 
@@ -46,6 +47,7 @@ for legume in legumes:
     mask = np.zeros(segmented_img.shape[:2])
     for cor in legume[1]:
         cor = segmented_img[cor[0],cor[1],:]
+        print(cor)
         lower = upper = cor
         mask+=   cv2.inRange(segmented_img, lower, upper)
         imshow(mask)
@@ -55,6 +57,10 @@ for legume in legumes:
         mask = cv2.morphologyEx(mask,cv2.MORPH_ERODE, kernel)
         mask = cv2.morphologyEx(mask,cv2.MORPH_DILATE, kernel)
         
+    image_copy2 = img.copy()
+    for i in range(3): # Constructs segmented image
+        image_copy2[:,:,i] = cv2.bitwise_and(image_copy2[:,:,i],mask)
+    imshow(image_copy2,f"Segmentation_{j}",save=True)
     contorno = cv2.findContours(mask,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)[0] #find contour
     areas = [cv2.contourArea(c) for c in contorno] # areas of contour
     max_index = np.argmax(areas) # index of largest area
